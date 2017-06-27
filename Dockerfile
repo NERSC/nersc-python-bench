@@ -11,6 +11,7 @@ RUN                                 \
         gfortran                    \
         python                      \
         python-pip                  \
+        python-mysqldb              \
         zlib1g-dev
 
 # Install python packages
@@ -55,13 +56,24 @@ RUN chmod a+x /usr/local/bin/mpi4py-import.py
 ADD scripts/report-benchmark.py /usr/local/bin
 RUN chmod a+x /usr/local/bin/report-benchmark.py
 
+# Confine astropy cache and config to container.
+
+ENV XDG_CACHE_HOME=/srv/cache
+RUN mkdir -p $XDG_CACHE_HOME/astropy
+
+ENV XDG_CONFIG_HOME=/srv/config
+RUN mkdir -p $XDG_CONFIG_HOME/astropy
+
+RUN python -c "import astropy"
+
 # Install pynamic v1.3
 
 ADD https://github.com/LLNL/pynamic/archive/1.3.tar.gz                      \
-    /usr/local/src
+    /opt
 
 RUN                                                                         \
-    cd /usr/local/src                                                   &&  \
+    cd /opt                                                             &&  \
     tar zxf 1.3.tar.gz                                                  &&  \
     cd pynamic-1.3/pynamic-pyMPI-2.6a1                                  &&  \
     python ./config_pynamic.py 495 1850 -e -u 215 1850 -n 100 -t ; exit 0
+
