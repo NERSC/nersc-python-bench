@@ -25,9 +25,11 @@ fi
 # Run benchmark.
 
 export OMP_NUM_THREADS=1
+unset PYTHONSTARTUP
+pynamic_dir=/opt/pynamic-1.3/pynamic-pyMPI-2.6a1
 
 output=tmp/latest-$SLURM_JOB_NAME.txt
-srun -c 2 shifter /opt/pynamic-1.3/pynamic-pyMPI-2.6a1/pynamic-pyMPI /opt/pynamic-1.3/pynamic-pyMPI-2.6a1/pynamic_driver.py $(date +%s) | tee $output
+srun -c 2 shifter $pynamic_dir/pynamic-pyMPI $pynamic_dir/pynamic_driver.py $(date +%s) | tee $output
 
 # Finalize benchmark result.
 

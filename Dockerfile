@@ -77,3 +77,8 @@ RUN                                                                         \
     cd pynamic-1.3/pynamic-pyMPI-2.6a1                                  &&  \
     python ./config_pynamic.py 495 1850 -e -u 215 1850 -n 100 -t ; exit 0
 
+# Little extra kick for Pynamic
+
+RUN                                                                         \
+    echo /opt/pynamic-1.3/pynamic-pyMPI-2.6a1 >> /etc/ld.so.conf        &&  \
+    ldconfig
