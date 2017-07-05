@@ -1,16 +1,17 @@
 #!/bin/bash
 #SBATCH --account=nstaff
-#SBATCH --constraint=haswell
+#SBATCH --constraint=knl
+#SBATCH --core-spec=4
 #SBATCH --image=docker:rcthomas/nersc-python-bench:0.3.2
-#SBATCH --job-name=pynamic-cori-haswell-shifter-003
+#SBATCH --job-name=pynamic-cori-knl-shifter-4800
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=rcthomas@lbl.gov
-#SBATCH --nodes=3
-#SBATCH --ntasks-per-node=32
-#SBATCH --output=logs/pynamic-cori-haswell-shifter-003-%j.out
+#SBATCH --nodes=4800
+#SBATCH --ntasks-per-node=8
+#SBATCH --output=logs/pynamic-cori-knl-shifter-4800-%j.out
 #SBATCH --partition=regular
 #SBATCH --qos=normal
-#SBATCH --time=30
+#SBATCH --time=20
 
 # Configuration.
 
@@ -29,7 +30,7 @@ unset PYTHONSTARTUP
 pynamic_dir=/opt/pynamic-master/pynamic-pyMPI-2.6a1
 
 output=tmp/latest-$SLURM_JOB_NAME.txt
-srun -c 2 shifter $pynamic_dir/pynamic-pyMPI $pynamic_dir/pynamic_driver.py $(date +%s) | tee $output
+srun -c 32 --cpu_bind=cores shifter $pynamic_dir/pynamic-pyMPI $pynamic_dir/pynamic_driver.py $(date +%s) | tee $output
 
 # Extract result.
 

@@ -2,15 +2,15 @@
 #SBATCH --account=nstaff
 #SBATCH --constraint=haswell
 #SBATCH --image=docker:rcthomas/nersc-python-bench:0.3.2
-#SBATCH --job-name=pynamic-cori-haswell-shifter-003
+#SBATCH --job-name=pynamic-cori-haswell-shifter-150
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=rcthomas@lbl.gov
-#SBATCH --nodes=3
+#SBATCH --nodes=150
 #SBATCH --ntasks-per-node=32
-#SBATCH --output=logs/pynamic-cori-haswell-shifter-003-%j.out
+#SBATCH --output=logs/pynamic-cori-haswell-shifter-150-%j.out
 #SBATCH --partition=regular
-#SBATCH --qos=normal
-#SBATCH --time=30
+#SBATCH --qos=premium
+#SBATCH --time=10
 
 # Configuration.
 

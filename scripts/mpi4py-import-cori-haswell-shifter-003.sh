@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=nstaff
 #SBATCH --constraint=haswell
-#SBATCH --image=docker:rcthomas/nersc-python-bench:0.1.6
+#SBATCH --image=docker:rcthomas/nersc-python-bench:0.3.2
 #SBATCH --job-name=mpi4py-import-cori-haswell-shifter-003
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=rcthomas@lbl.gov
@@ -16,6 +16,13 @@
 
 commit=true
 
+# Environment.
+
+unset PYTHONPATH
+unset PYTHONSTARTUP
+unset PYTHONUSERBASE
+export OMP_NUM_THREADS=1
+
 # Initialize benchmark result.
 
 if [ $commit = true ]; then
@@ -23,8 +30,6 @@ if [ $commit = true ]; then
 fi
 
 # Run benchmark.
-
-export OMP_NUM_THREADS=1
 
 output=tmp/latest-$SLURM_JOB_NAME.txt
 srun -c 2 shifter python /usr/local/bin/mpi4py-import.py $(date +%s) | tee $output
@@ -34,3 +39,5 @@ srun -c 2 shifter python /usr/local/bin/mpi4py-import.py $(date +%s) | tee $outp
 if [ $commit = true ]; then
     shifter python /usr/local/bin/report-benchmark.py finalize $( grep elapsed $output | awk '{ print $NF }' )
 fi
+
+shifter python -c 'import sys; print "\n".join(sys.path)'

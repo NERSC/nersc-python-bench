@@ -1,20 +1,28 @@
-#!/bin/bash
+#!/bin/bash 
 #SBATCH --account=nstaff
-#SBATCH --constraint=haswell
 #SBATCH --image=docker:rcthomas/nersc-python-bench:0.3.2
-#SBATCH --job-name=pynamic-cori-haswell-shifter-003
+#SBATCH --job-name=pynamic-edison-shifter-004
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=rcthomas@lbl.gov
-#SBATCH --nodes=3
-#SBATCH --ntasks-per-node=32
-#SBATCH --output=logs/pynamic-cori-haswell-shifter-003-%j.out
-#SBATCH --partition=regular
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=24
+#SBATCH --output=logs/pynamic-edison-shifter-004-%j.out
+#SBATCH --partition=debug
 #SBATCH --qos=normal
-#SBATCH --time=30
+#SBATCH --time=10
 
 # Configuration.
 
 commit=false
+
+# Environment.
+
+module load shifter
+unset PYTHONPATH
+unset PYTHONSTARTUP
+unset PYTHONUSERBASE
+export OMP_NUM_THREADS=1
+pynamic_dir=/opt/pynamic-master/pynamic-pyMPI-2.6a1
 
 # Initialize benchmark result.
 
@@ -24,12 +32,8 @@ fi
 
 # Run benchmark.
 
-export OMP_NUM_THREADS=1
-unset PYTHONSTARTUP
-pynamic_dir=/opt/pynamic-master/pynamic-pyMPI-2.6a1
-
 output=tmp/latest-$SLURM_JOB_NAME.txt
-srun -c 2 shifter $pynamic_dir/pynamic-pyMPI $pynamic_dir/pynamic_driver.py $(date +%s) | tee $output
+time srun shifter $pynamic_dir/pynamic-pyMPI $pynamic_dir/pynamic_driver.py $(date +%s) | tee $output
 
 # Extract result.
 

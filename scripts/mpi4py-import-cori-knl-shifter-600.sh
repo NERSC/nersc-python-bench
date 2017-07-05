@@ -1,23 +1,24 @@
 #!/bin/bash
 #SBATCH --account=nstaff
+#SBATCH --constraint=knl
+#SBATCH --core-spec=4
 #SBATCH --image=docker:rcthomas/nersc-python-bench:0.3.2
-#SBATCH --job-name=mpi4py-import-edison-shifter-004
+#SBATCH --job-name=mpi4py-import-cori-knl-shifter-600
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=rcthomas@lbl.gov
-#SBATCH --nodes=4
-#SBATCH --ntasks-per-node=24
-#SBATCH --output=logs/mpi4py-import-edison-shifter-004-%j.out
+#SBATCH --nodes=600
+#SBATCH --ntasks-per-node=8
+#SBATCH --output=logs/mpi4py-import-cori-knl-shifter-600-%j.out
 #SBATCH --partition=regular
 #SBATCH --qos=normal
-#SBATCH --time=30
+#SBATCH --time=10
 
 # Configuration.
 
-commit=true
+commit=false
 
 # Environment.
 
-module load shifter
 unset PYTHONPATH
 unset PYTHONSTARTUP
 unset PYTHONUSERBASE
@@ -32,10 +33,12 @@ fi
 # Run benchmark.
 
 output=tmp/latest-$SLURM_JOB_NAME.txt
-srun shifter python /usr/local/bin/mpi4py-import.py $(date +%s) | tee $output
+srun -c 32 --cpu_bind=cores shifter python /usr/local/bin/mpi4py-import.py $(date +%s) | tee $output
 
 # Finalize benchmark result.
 
 if [ $commit = true ]; then
     shifter python /usr/local/bin/report-benchmark.py finalize $( grep elapsed $output | awk '{ print $NF }' )
 fi
+
+shifter python -c 'import sys; print "\n".join(sys.path)'
